@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/lambda_gradle_kotlin.iml" filepath="$PROJECT_DIR$/lambda_gradle_kotlin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lambda_gradle_kotlin.iml" filepath="$PROJECT_DIR$/.idea/modules/lambda_gradle_kotlin.iml" group="lambda_gradle_kotlin" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lambda_gradle_kotlin_main.iml" filepath="$PROJECT_DIR$/.idea/modules/lambda_gradle_kotlin_main.iml" group="lambda_gradle_kotlin" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lambda_gradle_kotlin_test.iml" filepath="$PROJECT_DIR$/.idea/modules/lambda_gradle_kotlin_test.iml" group="lambda_gradle_kotlin" />
     </modules>
   </component>
 </project>
