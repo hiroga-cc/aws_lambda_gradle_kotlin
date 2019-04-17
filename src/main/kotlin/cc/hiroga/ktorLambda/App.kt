@@ -13,6 +13,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
+import junit.framework.Assert
 import junit.framework.Assert.assertEquals
 import org.junit.Test
 import java.security.SecureRandom
@@ -25,7 +26,14 @@ public class App {
     public fun handleRequest(count: Int, context: Context): String {
         val lambdaLogger = context.getLogger()
         lambdaLogger.log("count = " + count)
-        return "${count * 3}"
+
+        return withTestApplication({
+            module()
+        }) {
+            with(handleRequest(HttpMethod.Get, "/")) {
+                return@withTestApplication response.status().toString()
+            }
+        }
     }
 }
 

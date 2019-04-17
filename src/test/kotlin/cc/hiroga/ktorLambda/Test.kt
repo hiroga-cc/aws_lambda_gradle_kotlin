@@ -1,4 +1,4 @@
-package cc.hiorga.ktorLambda
+package cc.hiroga.ktorLambda
 
 import cc.hiroga.ktorLambda.module
 import io.ktor.http.HttpMethod

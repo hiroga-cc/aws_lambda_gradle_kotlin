@@ -1,5 +1,6 @@
 apply plugin: "java"
 apply plugin: "kotlin"
+sourceCompatibility = 1.8
 
 version = '1.0'
 
@@ -11,11 +12,6 @@ sourceSets {
     main.kotlin.srcDirs += 'src/main/kotlin'
     main.java.srcDirs += 'src/main/java'
 }
-
-apply plugin: 'java'
-apply plugin: 'kotlin'
-
-sourceCompatibility = 1.8
 
 dependencies {
     compile (
@@ -30,7 +26,7 @@ dependencies {
 }
 
 task buildZip(type: Zip) {
-    from compileJava
+    from compileKotlin
     from processResources
     into('lib') {
         from configurations.runtime
