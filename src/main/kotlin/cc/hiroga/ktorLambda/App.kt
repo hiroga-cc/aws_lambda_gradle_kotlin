@@ -23,9 +23,9 @@ import java.util.*
  * Created by sakemotoshinya on 16/11/25.
  */
 public class App {
-    public fun handleRequest(count: Int, context: Context): String {
+    public fun handleRequest(request: RequestClass, context: Context): String {
         val lambdaLogger = context.getLogger()
-        lambdaLogger.log("count = " + count)
+        lambdaLogger.log(request.httpMethod?: "no http method...")
 
         return withTestApplication({
             module()
