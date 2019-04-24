@@ -33,6 +33,7 @@ public class App {
                 setBody(listOf("userId" to "test1").toString())
             }.apply {
                 responseEvent.statusCode = response.status()?.value
+                responseEvent.body = mapOf("One" to 1, "Two" to 2).toString()
             }
         }
         return responseEvent
