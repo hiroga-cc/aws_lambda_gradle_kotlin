@@ -8,7 +8,7 @@ import io.ktor.server.netty.Netty
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
-import io.ktor.request.httpMethod
+import io.ktor.request.receiveText
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.testing.handleRequest
@@ -29,11 +29,11 @@ public class App {
         withTestApplication({
             module()
         }) {
-            handleRequest(HttpMethod.Post, "/") {
-                setBody(listOf("userId" to "test1").toString())
+            handleRequest(HttpMethod(event.httpMethod), "/") {
+                if (event.body != null) setBody(event.body)
             }.apply {
                 responseEvent.statusCode = response.status()?.value
-                responseEvent.body = mapOf("One" to 1, "Two" to 2).toString()
+                responseEvent.body = response.content
             }
         }
         return responseEvent
@@ -44,9 +44,16 @@ fun Application.module() {
     install(DefaultHeaders)
     install(CallLogging)
     install(Routing) {
-        get("/") {
-            println(call.request.httpMethod)
-            call.respondText("My Example Blog2", ContentType.Text.Html)
+        route("/") {
+            get {
+                call.respondText("Hi, this is Hiroaki!", ContentType.Text.Html)
+            }
+
+            // return received text * 3
+            post("/") {
+                val text = call.receiveText()
+                call.respondText("$text-$text-$text")
+            }
         }
     }
 }
