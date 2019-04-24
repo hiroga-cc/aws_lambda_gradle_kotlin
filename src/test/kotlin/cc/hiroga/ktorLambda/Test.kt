@@ -15,7 +15,7 @@ class ApplicationTest {
     }) {
         with(handleRequest(HttpMethod.Get, "/")) {
             Assert.assertEquals(HttpStatusCode.OK, response.status())
-            Assert.assertEquals("My Example Blog2", response.content)
+            Assert.assertEquals("Hi, this is Hiroaki!", response.content)
         }
     }
 }

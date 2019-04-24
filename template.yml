@@ -1,0 +1,97 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: AWS Serverless Application Model (AWS SAM) Template
+
+Resources:
+  KtorApi:
+    # `AWS::ApiGateway::Deployment` does not deploy again for stack update.
+    # The reference about `AWS::Serverless::Api`
+    # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: KtorApi
+      StageName: "v1"
+      DefinitionBody:
+        # The reference about extended open api syntax
+        # https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-swagger-extensions.html
+        swagger: "2.0"
+        info:
+          title: KtorApi-DefinitionBody
+        paths:
+          /:
+            x-amazon-apigateway-any-method:
+              consumes:
+                - "application/json"
+              produces:
+                - "application/json"
+              responses:
+                "200":
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: "string"
+              security:
+                - lambda-authorizer: []
+              x-amazon-apigateway-integration:
+                # The reference about extended method.
+                # https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-swagger-extensions-integration.html
+                httpMethod: ANY
+                type: AWS_PROXY
+                uri:
+                  Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${KtorFunction.Arn}/invocations"
+                responses:
+                  "200":
+                    statusCode: "200"
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+
+  KtorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: KtorFunction
+      CodeUri: .
+      Handler: cc.hiroga.ktorLambda.App::handleRequest
+      MemorySize: 128
+      Runtime: nodejs8.10
+      Timeout: 30
+      Role: { "Fn::ImportValue": !Sub "${ENV}-FunctionExecutionRole-Arn" }
+      Events:
+        Api: # for local execution
+          Type: Api
+          Properties:
+            Path: /
+            Method: POST
+            RestApiId: !Ref KtorApi
+
+  KtorFunctionLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref KtorFunction
+      Principal: apigateway.amazonaws.com
+
+  KtorFunctionIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: "sts:AssumeRole"
+      Policies:
+        -
+          PolicyName: "create_log"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action: "cloudwatch:*"
+                Resource: "*"
+
+  KtorFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/lambda/KtorFunction
+      RetentionInDays: 731
