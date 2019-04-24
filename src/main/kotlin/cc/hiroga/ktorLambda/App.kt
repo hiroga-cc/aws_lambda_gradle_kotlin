@@ -1,39 +1,41 @@
 package cc.hiroga.ktorLambda
 
 import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.lambda.runtime.LambdaLogger
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
+import io.ktor.request.httpMethod
 import io.ktor.response.*
 import io.ktor.routing.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import io.ktor.server.testing.handleRequest
+import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
-import junit.framework.Assert
-import junit.framework.Assert.assertEquals
-import org.junit.Test
-import java.security.SecureRandom
-import java.util.*
 
 /**
- * Created by sakemotoshinya on 16/11/25.
+ * Created by @hiroga_cc.
+ * Original by sakemotoshinya on 16/11/25.
  */
 public class App {
-    public fun handleRequest(request: RequestClass, context: Context): String {
+    public fun handleRequest(event: APIGatewayProxyRequestEvent, context: Context): APIGatewayProxyResponseEvent {
         val lambdaLogger = context.getLogger()
-        lambdaLogger.log(request.httpMethod?: "no http method...")
+        lambdaLogger.log("event: $event")
 
-        return withTestApplication({
+        val responseEvent = APIGatewayProxyResponseEvent()
+
+        withTestApplication({
             module()
         }) {
-            with(handleRequest(HttpMethod.Get, "/")) {
-                return@withTestApplication response.status().toString()
+            handleRequest(HttpMethod.Post, "/") {
+                setBody(listOf("userId" to "test1").toString())
+            }.apply {
+                responseEvent.statusCode = response.status()?.value
             }
         }
+        return responseEvent
     }
 }
 
@@ -42,6 +44,7 @@ fun Application.module() {
     install(CallLogging)
     install(Routing) {
         get("/") {
+            println(call.request.httpMethod)
             call.respondText("My Example Blog2", ContentType.Text.Html)
         }
     }
