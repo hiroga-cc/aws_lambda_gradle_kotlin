@@ -3,12 +3,13 @@ version: 0.1
 phases:
   show:
     coomands:
-      - aws configure list
+
   install:
     commands:
       - echo Nothing to do in the install phase...
   pre_build:
     commands:
+      - aws configure list
       - echo Nothing to do in the pre_build phase...
   build:
     commands:
@@ -18,7 +19,7 @@ phases:
           --template-file template.yml \
           --s3-bucket cc.hiroga.cfn \
           --output-template-file "output-template.yml"
-  deploy:
+  post_build:
     commands:
       - |
         aws cloudformation deploy \
