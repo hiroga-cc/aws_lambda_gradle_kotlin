@@ -53,7 +53,7 @@ Resources:
       MemorySize: 128
       Runtime: nodejs8.10
       Timeout: 30
-      Role: { "Fn::ImportValue": !Sub "${ENV}-FunctionExecutionRole-Arn" }
+      Role: !GetAtt KtorFunctionIamRole.Arn
       Events:
         Api: # for local execution
           Type: Api

@@ -15,14 +15,16 @@ phases:
         aws cloudformation package \
           --template-file template.yml \
           --s3-bucket cc.hiroga.cfn \
-          --output-template-file "output-template.yml"
+          --output-template-file output-template.yml \
+          --region ap-northeast-1
   post_build:
     commands:
       - |
         aws cloudformation deploy \
-          --template-file "output-template.yml" \
-          --stack-name "ktor-lambbda" \
-          --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND
+          --template-file output-template.yml \
+          --stack-name ktor-lambbda \
+          --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
+          --region ap-northeast-1
 
 artifacts:
   type: zip
