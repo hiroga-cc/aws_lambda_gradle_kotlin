@@ -29,12 +29,10 @@ Resources:
                   headers:
                     Access-Control-Allow-Origin:
                       type: "string"
-              security:
-                - lambda-authorizer: []
               x-amazon-apigateway-integration:
                 # The reference about extended method.
                 # https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-swagger-extensions-integration.html
-                httpMethod: ANY
+                httpMethod: POST
                 type: AWS_PROXY
                 uri:
                   Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${KtorFunction.Arn}/invocations"
@@ -48,10 +46,10 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: KtorFunction
-      CodeUri: .
+      CodeUri: s3://cc.hiroga.cfn/codes/lambda_gradle_kotlin-1.0.zip
       Handler: cc.hiroga.ktorLambda.App::handleRequest
       MemorySize: 128
-      Runtime: nodejs8.10
+      Runtime: java8
       Timeout: 30
       Role: !GetAtt KtorFunctionIamRole.Arn
       Events:
